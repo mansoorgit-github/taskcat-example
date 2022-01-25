@@ -1,0 +1,92 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  AWSOrganizationId:
+    Type: String
+    Description: AWS Organization ID to share the resources with. Obtain from 'AWS Organizations -> Settings'
+    MinLength: 12
+    MaxLength: 12
+    Default: 'o-8fjuze0yfb'
+    #AllowedPattern: '^o-[a-z0-9]{10,32}$'
+  MasterAccountId:
+    Type: String
+    Description: 12-digt AWS Account ID of AWS Control Tower Master Account.
+    MinLength: 12
+    MaxLength: 12
+    AllowedPattern: '^[0-9]{12}$'
+    Default: 209598685543
+  PrivateAmazonASN: 
+    Type: String
+    Description: A private Autonomous System Number (ASN) for the Amazon side of a BGP session. Range 64512 to 65534 for 16-bit ASNs and 4200000000 to 4294967294 for 32-bit ASNs.
+    Default: 64520
+    MinLength: 5
+    MaxLength: 10
+    ConstraintDescription: The range is 64512 to 65534 for 16-bit ASNs and 4200000000 to 4294967294 for 32-bit ASNs.
+
+Resources:
+  myTransitGateway:
+    Type: "AWS::EC2::TransitGateway"
+    DependsOn: globalnetwork
+    Properties:
+      Description: "TGW Route Integration Test"
+      AmazonSideAsn: !Ref PrivateAmazonASN
+      AutoAcceptSharedAttachments: "enable"
+      DefaultRouteTableAssociation: "enable"
+      DefaultRouteTablePropagation: "enable"
+      DnsSupport: "enable"
+      VpnEcmpSupport: "enable"
+      Tags:
+      - Key: Application
+        Value: !Ref 'AWS::StackId'
+      - Key: Name
+        Value: myTransitGateway
+  myResourceShare:
+    DependsOn: myTransitGateway
+    Type: "AWS::RAM::ResourceShare"
+    Properties:
+      Name: !Join ["-", [ "MyResourceShare", !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref "AWS::StackId"]]]]]]
+      ResourceArns: 
+        - !Sub "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:transit-gateway/${myTransitGateway}"
+      Principals: 
+        - !Sub "arn:aws:organizations::${MasterAccountId}:organization/${AWSOrganizationId}"
+        #- "arn:aws:organizations::209598685543:ou/o-8fjuze0yfb/ou-dt9w-38g6ofzh"
+        #- "arn:aws:organizations::209598685543:ou/o-8fjuze0yfb/ou-dt9w-ea5uwuui"
+        #- "arn:aws:organizations::209598685543:ou/o-8fjuze0yfb/ou-dt9w-98x5ursy"
+        #- "arn:aws:organizations::209598685543:ou/o-8fjuze0yfb/ou-dt9w-edu481s5"
+      Tags:
+        - Key: Name
+          Value: myTransitGateway
+          
+  globalnetwork:
+    Type: 'AWS::NetworkManager::GlobalNetwork'
+    Properties:
+      Description: "Global network for CT"
+      Tags:
+      - Key: Name
+        Value: Ct-network
+        
+        
+  Tgregister:
+    Type: "AWS::NetworkManager::TransitGatewayRegistration"
+    Properties:
+      GlobalNetworkId: !Ref globalnetwork
+      TransitGatewayArn: !Sub 'arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:transit-gateway/${myTransitGateway}'
+  
+
+  spokevpc:
+    Type: 'AWS::EC2::TransitGatewayRouteTable'
+    DependsOn: myTransitGateway
+    Properties:
+      TransitGatewayId: !Ref myTransitGateway
+
+        
+  spokefirewall:
+    Type: 'AWS::EC2::TransitGatewayRouteTable'
+    DependsOn: myTransitGateway
+    Properties:
+      TransitGatewayId: !Ref myTransitGateway
+                
+
+Outputs:
+  myTransitGateway:
+    Description: Transit Gateway Name
+    Value: !Ref myTransitGateway

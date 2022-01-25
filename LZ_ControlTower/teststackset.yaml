@@ -1,0 +1,62 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'A simple template to create an EC2 instance in any region based on environment'
+Parameters:
+  Environment:
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - TEST
+      - PROD
+    Description: Select Environment (DEV,TEST,PROD)
+Mappings:
+  RegionMap:
+    us-east-1:
+      LINUXAMI: ami-0533f2ba8a1995cf9
+    us-east-2:
+      LINUXAMI: ami-089c6f2e3866f0f14
+    us-west-1:
+      LINUXAMI: ami-0a245a00f741d6301
+    us-west-2:
+      LINUXAMI: ami-05b622b5fa0269787
+    sa-east-1:
+      LINUXAMI: ami-0ca43e15336e41670
+    ca-central-1:
+      LINUXAMI: ami-09d75fc0586859f7a
+    eu-west-1:
+      LINUXAMI: ami-0d712b3e6e1f798ef
+    eu-west-2:
+      LINUXAMI: ami-01c835443b86fe988
+    eu-west-3:
+      LINUXAMI: ami-0575fc648136871a1
+    eu-central-1:
+      LINUXAMI: ami-013fffc873b1eaa1c
+    ap-southeast-1:
+      LINUXAMI: ami-0ba0ce0c11eb723a1
+    ap-southeast-2:
+      LINUXAMI: ami-0b3d7a5ecc2daba4c
+    ap-northeast-1:
+      LINUXAMI: ami-00a5245b4816c38e6
+    ap-northeast-2:
+      LINUXAMI: ami-00dc207f8ba6dc919
+    ap-south-1:
+      LINUXAMI: ami-0ad42f4f66f6c1cc9
+  InstanceSizeMap:
+    DEV:
+      SIZE : "t2.micro"
+    TEST:
+      SIZE : "t2.small"
+    PROD:
+      SIZE : "t2.medium"
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", LINUXAMI] # Psuedo parameters, Intrinsic functions
+      InstanceType: !FindInMap [InstanceSizeMap, !Ref Environment, SIZE] # Paramaters
+      Tags:
+        - Key: Name
+          Value: DevInstance
+        - Key: Environment
+          Value: Dev

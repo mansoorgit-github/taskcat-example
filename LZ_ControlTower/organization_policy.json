@@ -1,0 +1,37 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "organizations:ListRoots",
+                "organizations:ListDelegatedServicesForAccount",
+                "organizations:DescribeAccount",
+                "organizations:UntagResource",
+                "organizations:DescribePolicy",
+                "organizations:ListChildren",
+                "organizations:TagResource",
+                "organizations:ListCreateAccountStatus",
+                "organizations:DescribeOrganization",
+                "organizations:DescribeOrganizationalUnit",
+                "organizations:DescribeHandshake",
+                "organizations:DescribeCreateAccountStatus",
+                "organizations:ListPoliciesForTarget",
+                "organizations:DescribeEffectivePolicy",
+                "organizations:ListTargetsForPolicy",
+                "organizations:ListTagsForResource",
+                "organizations:ListAWSServiceAccessForOrganization",
+                "organizations:ListPolicies",
+                "organizations:ListDelegatedAdministrators",
+                "organizations:ListAccountsForParent",
+                "organizations:ListHandshakesForOrganization",
+                "organizations:ListHandshakesForAccount",
+                "organizations:ListAccounts",
+                "organizations:ListParents",
+                "organizations:ListOrganizationalUnitsForParent"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "Key": "AccountEmail",
+    "Value": "coe_poc_CT_BatchAccount4@fsawscoe.com"
+  },
+  {
+    "Key": "AccountName",
+    "Value": "coe_poc_CT_BatchAccount4"
+  },
+  {
+    "Key": "ManagedOrganizationalUnit",
+    "Value": "NonProd OU"
+  },
+  {
+    "Key": "SSOUserEmail",
+    "Value": "coe_poc_CT_BatchAccount4@fsawscoe.com"
+  },
+  {
+    "Key": "SSOUserFirstName",
+    "Value": "NonProd04"
+  },
+  {
+    "Key": "SSOUserLastName",
+    "Value": "Test"
+  }
+]
